@@ -14,6 +14,7 @@ cdef extern from "coin/OsiSolverInterface.hpp":
                          double *collb, double *colbub, double *obj,
                          char *rowsen, double *rowrhs, double *rowrng)
         void setObjSense(double)
+        int readMps(char *filename)
         void setInteger(int)
         double *getColSolution()
 
@@ -237,6 +238,19 @@ cdef class CBC:
         # Disable reduced model
         model.setSpecialOptions(model.specialOptions() & (~512))
 
+        # Write the problem to file in MPS format.
+        # With the rename flag set to 0, we'll preserve the original variable names
+        # from the PuLP formulation. This is critical for warm starts, where the variable
+        # name uniquely identifies a variable and isn't dynamically created.
+        # Example: the variable name is an MD5 hash of what the variable represents.
+        # TODO: remove hardcoded files - for .mps and .sol files
+        lp.writeMPS("/tmp/tmpMps.mps", rename=0)
+        self._solver = solver = new OsiClpSolverInterface()
+        solver.readMps("/tmp/tmpMps.mps")
+        solver.setObjSense(objSense)
+        model = new CbcModel(dereference(solver))
+        # model.setSpecialOptions(model.specialOptions() & (~512))
+
         # Create and pass in event handler
         cdef CbcEventHandler *event_handler
         if callback:
@@ -254,9 +268,9 @@ cdef class CBC:
         argv[0] = "cbc"
         for i, option in enumerate(options):
             argv[i+1] = options[i]
-        argv[argc-4] = "-solve"
-        argv[argc-3] = "-printingOptions=rows"
-        argv[argc-2] = "-solution=/tmp/sol.sol"
+        argv[argc-4] = "-printingOptions=csv"
+        argv[argc-3] = "-solve"
+        argv[argc-2] = "-solution=/tmp/tmpSol.sol"
         argv[argc-1] = "-quit"
 
         # Call CBC
@@ -329,5 +343,7 @@ cdef class CBC:
 
     def getVariable(self, var):
         cdef double *solution = self._cb_model.bestSolution()
-
-        return solution[self.v2n[var]]
+        return 0
+        # TODO: reference by variable name, OR you might be okay...
+        # TODO: figure out how to work this by variable name
+        #return solution[var.name]
