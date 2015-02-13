@@ -249,12 +249,13 @@ cdef class CBC:
         # Set options
         options = " ".join('-%s' % opt for opt in self.options)
         options = options.split(" ")
-        cdef int argc = len(options) + 3
+        cdef int argc = len(options) + 4
         cdef char **argv = <char**>malloc(sizeof(char*) * argc)
         argv[0] = "cbc"
         for i, option in enumerate(options):
             argv[i+1] = options[i]
-        argv[argc-2] = "-solve"
+        argv[argc-3] = "-solve"
+        argv[argc-2] = "-solution /tmp/sol.sol"
         argv[argc-1] = "-quit"
 
         # Call CBC
