@@ -255,7 +255,7 @@ cdef class CBC:
         for i, option in enumerate(options):
             argv[i+1] = options[i]
         argv[argc-3] = "-solve"
-        argv[argc-2] = "-solution /tmp/sol.sol"
+        argv[argc-2] = "-solution=/tmp/sol.sol"
         argv[argc-1] = "-quit"
 
         # Call CBC
