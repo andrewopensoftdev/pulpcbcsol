@@ -2,7 +2,7 @@ from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
-ext_modules = [Extension('pulpcbc',
+ext_modules = [Extension('pulpcbcsol',
                          ['pulpcbc.pyx', 'CyEventHandler.cpp'],
                          libraries=['CbcSolver', 'Cbc', 'Cgl', 'Osi', 'OsiClp',
                                     'Clp', 'CoinUtils', 'rt', 'bz2', 'z',
@@ -13,7 +13,7 @@ ext_modules = [Extension('pulpcbc',
                         )]
 
 setup(
-    name = 'pulpcbc',
+    name = 'pulpcbcsol',
     version = '0.1',
     cmdclass = {'build_ext': build_ext},
     ext_modules = ext_modules,

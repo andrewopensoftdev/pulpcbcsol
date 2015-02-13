@@ -2,7 +2,7 @@
 import pulp
 from pulp.tests import *
 
-import pulpcbc
+import pulpcbcsol
 
 def test_pulptests():
     tests = [
@@ -23,7 +23,7 @@ def test_pulptests():
             pulpTest120, pulpTest121, pulpTest122, pulpTest123
             ]
     for t in tests:
-        t(pulpcbc.CBC())
+        t(pulpcbcsol.CBC())
 
 def test_callback():
     p = pulp.LpProblem()
@@ -34,15 +34,15 @@ def test_callback():
     p += 3*x + y >= 8
     p += 1*x + 1.5*y <= 12
 
-    solver = pulpcbc.CBC()
+    solver = pulpcbcsol.CBC()
 
     USED_CB = False
     def event_cb(eventWhere):
         USED_CB = True
-        if eventWhere in (pulpcbc.Event.solution, pulpcbc.Event.heuristicSolution):
+        if eventWhere in (pulpcbcsol.Event.solution, pulpcbcsol.Event.heuristicSolution):
             solver.getVariable(x)
 
-        return pulpcbc.Action.noAction
+        return pulpcbcsol.Action.noAction
 
     p.solve(solver, callback=event_cb)
     print x.varValue, y.varValue
